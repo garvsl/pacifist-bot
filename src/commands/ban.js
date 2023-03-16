@@ -9,15 +9,15 @@ const {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("kick")
-    .setDescription("Kicks a member from the server")
+    .setName("ban")
+    .setDescription("Bans a member from the server")
     .addUserOption((option) =>
       option
         .setName("target")
         .setDescription("The member to ban")
         .setRequired(true)
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
     .setDMPermission(false),
   async execute(interaction) {
     const member = interaction.options.getMember("target");
@@ -44,7 +44,7 @@ module.exports = {
 
     if (member.id === interaction.user.id) {
       return await interaction.reply({
-        content: "You cannot kick yourself!",
+        content: "You cannot ban yourself!",
         ephemeral: true,
       });
     }
@@ -55,7 +55,7 @@ module.exports = {
 
     if (targetHighestRole.position >= authorHighestRole.position) {
       return await interaction.reply({
-        content: "You do not have sufficient permissions to kick this member!",
+        content: "You do not have sufficient permissions to ban this member!",
         ephemeral: true,
       });
     }
@@ -69,10 +69,10 @@ module.exports = {
     }
 
     try {
-      const kickMessage = await interaction.reply({
+      const banMessage = await interaction.reply({
         embeds: [
           {
-            title: `Kick ${member.user.username}?`,
+            title: `Ban ${member.user.username}?`,
             color: 0xff0000,
           },
         ],
@@ -86,22 +86,22 @@ module.exports = {
         if (!interaction.user.id == interaction.message.author.id) {
         } else {
           if (interaction.customId === "yesSucces") {
-            await kickMessage.delete();
-            await member.kick();
+            await banMessage.delete();
+            await member.ban();
             await member.send(
-              `You have been kicked from ${interaction.guild.name}. `
+              `You have been banned from ${interaction.guild.name}. `
             );
             await interaction.channel.send({
               embeds: [
                 {
-                  title: `${member.user.username} has been kicked!`,
+                  title: `${member.user.username} has been banned!`,
                   color: 0xff0000,
                 },
               ],
               ephemeral: false,
             });
           } else if (interaction.customId === "noDanger") {
-            await kickMessage.delete();
+            await banMessage.delete();
           }
         }
       });
@@ -109,7 +109,7 @@ module.exports = {
       console.error(error);
       await interaction.reply({
         content:
-          "An error occurred while trying to kick the member. Please make sure I have sufficient permissions to perform this action.",
+          "An error occurred while trying to ban the member. Please make sure I have sufficient permissions to perform this action.",
         ephemeral: true,
       });
     }
