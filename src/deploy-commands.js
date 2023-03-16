@@ -15,6 +15,13 @@ for (const file of commandFiles) {
 }
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
+// rest
+//   .delete(
+//     Routes.applicationCommand(process.env.CLIENTID, "1086004751432433775")
+//   )
+//   .then(() => console.log("Successfully deleted application command"))
+//   .catch(console.error);
+
 (async () => {
   try {
     console.log(
