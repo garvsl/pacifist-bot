@@ -12,6 +12,6 @@ module.exports = {
     ),
   async execute(interaction) {
     const message = interaction.options.getString("message");
-    await interaction.reply(message);
+    await interaction.channel.send(message);
   },
 };
