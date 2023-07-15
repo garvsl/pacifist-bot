@@ -11,12 +11,21 @@ const { getVoiceConnection, joinVoiceChannel } = require("@discordjs/voice");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("leave")
-    .setDescription("Leaves the channel")
-    .setDMPermission(false),
+    .setName("volume")
+    .setDescription("Change the bot's volume")
+    .setDMPermission(false)
+    .addIntegerOption((option) =>
+      option
+        .setName("percent")
+        .setDescription("Provide the percentage (1-100).")
+        .setMinValue(1)
+        .setMaxValue(100)
+        .setRequired(true)
+    ),
   async execute(interaction) {
     const { options, member, guild, channel } = interaction;
 
+    const volume = options.getInteger("percent");
     const voiceChannel = member.voice.channel;
     const embed = new EmbedBuilder();
 
@@ -33,10 +42,8 @@ module.exports = {
     }
 
     try {
-      client.distube.voices.get(interaction)?.leave();
-      interaction.reply({ content: `Left the channel!` });
-      const connection = getVoiceConnection(voiceChannel.guild.id);
-      connection.destroy();
+      interaction.reply({ content: `Volume is now ${volume} 🔊` });
+      client.distube.setVolume(voiceChannel, volume);
     } catch (e) {
       console.log(e);
       embed.setColor("Red").setDescription("There is an error!");

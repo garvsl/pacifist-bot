@@ -11,8 +11,8 @@ const { getVoiceConnection, joinVoiceChannel } = require("@discordjs/voice");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("leave")
-    .setDescription("Leaves the channel")
+    .setName("queue")
+    .setDescription("Displays the current queue")
     .setDMPermission(false),
   async execute(interaction) {
     const { options, member, guild, channel } = interaction;
@@ -33,10 +33,26 @@ module.exports = {
     }
 
     try {
-      client.distube.voices.get(interaction)?.leave();
-      interaction.reply({ content: `Left the channel!` });
-      const connection = getVoiceConnection(voiceChannel.guild.id);
-      connection.destroy();
+      const queue = client.distube.getQueue(voiceChannel);
+
+      if (!queue) {
+        embed.setColor("Red").setDescription("Nothing playing right now!");
+        return interaction.reply({ embeds: [embed], ephemeral: true });
+      }
+
+      embed.setColor("Purple").setDescription(
+        `Current queue:\n${queue.songs
+          .map(
+            (song, id) =>
+              `**${id ? id : "Playing"}**. ${song.name} - \`${
+                song.formattedDuration
+              }\``
+          )
+          .slice(0, 10)
+          .join("\n")}`
+      );
+
+      return interaction.reply({ embeds: [embed], ephemeral: false });
     } catch (e) {
       console.log(e);
       embed.setColor("Red").setDescription("There is an error!");

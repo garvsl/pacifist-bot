@@ -11,8 +11,8 @@ const { getVoiceConnection, joinVoiceChannel } = require("@discordjs/voice");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("leave")
-    .setDescription("Leaves the channel")
+    .setName("skip")
+    .setDescription("Skip the curent song")
     .setDMPermission(false),
   async execute(interaction) {
     const { options, member, guild, channel } = interaction;
@@ -33,14 +33,22 @@ module.exports = {
     }
 
     try {
-      client.distube.voices.get(interaction)?.leave();
-      interaction.reply({ content: `Left the channel!` });
-      const connection = getVoiceConnection(voiceChannel.guild.id);
-      connection.destroy();
+      const queue = client.distube.getQueue(voiceChannel);
+
+      if (!queue) {
+        embed.setColor("Red").setDescription("There is no active queue.");
+        return interaction.reply({ embeds: [embed], ephemeral: true });
+      }
+
+      await queue.skip(voiceChannel);
+      embed.setColor("Green").setDescription("Song has been skipped");
+      return interaction.reply({ embeds: [embed], ephemeral: false });
     } catch (e) {
-      console.log(e);
-      embed.setColor("Red").setDescription("There is an error!");
-      return interaction.reply({ embeds: [embed], ephemeral: true });
+      const queue = client.distube.getQueue(voiceChannel);
+      // console.log(e);
+      await queue.stop(voiceChannel);
+      embed.setColor("Green").setDescription("Song has been skipped");
+      return interaction.reply({ embeds: [embed], ephemeral: false });
     }
   },
 };

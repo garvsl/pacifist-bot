@@ -1,7 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { REST, Routes } = require("discord.js");
-const dotenv = require("dotenv").config();
+const dotenv = require("dotenv");
+dotenv.config();
 
 const commands = [];
 const commandsPath = path.join(__dirname, "commands");
@@ -17,7 +18,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
 // rest
 //   .delete(
-//     Routes.applicationCommand(process.env.CLIENTID, "1086004751432433775")
+//     Routes.applicationCommand(process.env.CLIENTID, "1102316057970090055")
 //   )
 //   .then(() => console.log("Successfully deleted application command"))
 //   .catch(console.error);
